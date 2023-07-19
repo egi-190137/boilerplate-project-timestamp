@@ -29,11 +29,16 @@ app.get("/api/:date?", (req, res) => {
   const dateParams = req.params.date;
 
   const dateIsValid = date => date instanceof Date && !isNaN(date);
-  let date = new Date(dateParams);
-
+  
+  let date;
+  if (dateParams === undefined) {
+    date = new Date();
+  } else {
+    date = new Date(dateParams);
+  }
   if (dateIsValid(date)) {
-    const unix = date.getTime();
-    res.json({ unix: unix, utc: date.toUTCString()});
+    const milisecond = date.getTime();
+    res.json({ unix: milisecond, utc: date.toUTCString()});
   }
 
   if (/^\d+$/.test(dateParams)) {
@@ -42,7 +47,7 @@ app.get("/api/:date?", (req, res) => {
     date.setTime(milisecond);
     res.json({ unix: milisecond, utc: date.toUTCString()});
   }
-  
+
   res.json({ error : "Invalid Date" });
 });
 
