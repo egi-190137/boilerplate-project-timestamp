@@ -30,25 +30,30 @@ app.get("/api/:date?", (req, res) => {
 
   const dateIsValid = date => date instanceof Date && !isNaN(date);
   
-  let date;
+  let date, milisecond, result;
+
   if (dateParams === undefined) {
     date = new Date();
   } else {
     date = new Date(dateParams);
   }
+  
   if (dateIsValid(date)) {
-    const milisecond = date.getTime();
-    res.json({ unix: milisecond, utc: date.toUTCString()});
+    milisecond = date.getTime();
+    result = { unix: milisecond, utc: date.toUTCString() };
   }
-
-  if (/^\d+$/.test(dateParams)) {
-    const milisecond = parseInt(dateParams); 
+  else if (/^\d+$/.test(dateParams)) {
+    milisecond = parseInt(dateParams); 
     date = new Date();
     date.setTime(milisecond);
-    res.json({ unix: milisecond, utc: date.toUTCString()});
+
+    result = { unix: milisecond, utc: date.toUTCString() };
+  } 
+  else {
+    result = { error : "Invalid Date" };
   }
 
-  res.json({ error : "Invalid Date" });
+  res.json(result);
 });
 
 // listen for requests :)
